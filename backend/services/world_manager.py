@@ -4,7 +4,7 @@ from backend.database import vector_db
 
 def create_model():
     model = 'claude-3-5-sonnet-20240620'
-    api_key = "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"
+    api_key = ""
     max_tokens = 1024
     llm = ChatAnthropic(model = model, api_key = api_key, max_tokens = max_tokens)
     return  llm
