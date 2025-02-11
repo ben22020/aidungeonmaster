@@ -4,7 +4,7 @@ from langchain_anthropic import ChatAnthropic
 
 def create_model():
     model = 'claude-3-5-sonnet-20240620'
-    api_key = "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"
+    api_key = ""
     max_tokens = 1024
     llm = ChatAnthropic(model = model, api_key = api_key, max_tokens = max_tokens)
     return  llm
