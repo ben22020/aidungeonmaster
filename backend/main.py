@@ -8,6 +8,7 @@ app = FastAPI()
 
 app.include_router(world_router)
 app.include_router(npc_router)
+
 @app.get("/")
 def home():
     """Default API landing page."""

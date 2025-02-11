@@ -19,7 +19,7 @@ if st.button("Start New Adventure"):
 
     if response.status_code == 200:
         world_history = response.json()["world_history"]  # Extract history text
-        st.subheader("🌍 Your World’s History:")
+        st.subheader("Your World’s History:")
         st.write(world_history)  # Display response
     else:
-        st.error("Error: Unable to generate world history.")
+        st.error(f"Error: Unable to generate world history. {response.status_code}")
