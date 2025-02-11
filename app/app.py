@@ -3,16 +3,23 @@ import requests
 
 st.title("AI Dungeon Master")
 
-# Generate NPC Button
-if st.button("Generate NPC"):
-    npc = requests.get("http://127.0.0.1:8000/npc/").json()
-    st.session_state["npc"] = npc  # Store NPC in session
-    st.write(f"**NPC:** {npc['name']} ({npc['race']} {npc['role']})")
 
-# Dialogue Input
-if "npc" in st.session_state:
-    user_input = st.text_input("Talk to the NPC:")
-    if st.button("Send"):
-        npc_id = st.session_state["npc"]["id"]
-        response = requests.post(f"http://127.0.0.1:8000/dialogue/?npc_id={npc_id}&user_input={user_input}").json()
-        st.write(f"NPC: {response['response']}")
+theme = st.text_input("Enter a theme (e.g., Fantasy, Sci-Fi, Post-Apocalyptic):", "Sci-Fi")
+character_name = st.text_input("Enter your character's name:", "Skromdar")
+character_description = st.text_area("Describe your character:", "A Space Paladin with a mysterious past.")
+
+
+# Button to generate world history
+if st.button("Start New Adventure"):
+    with st.spinner("Generating world history..."):  # Show loading spinner
+        response = requests.get(
+            f"http://127.0.0.1:8000/generate_world/",
+            params={"theme": theme, "character_name": character_name, "character_description": character_description},
+        )
+
+    if response.status_code == 200:
+        world_history = response.json()["world_history"]  # Extract history text
+        st.subheader("🌍 Your World’s History:")
+        st.write(world_history)  # Display response
+    else:
+        st.error("Error: Unable to generate world history.")
