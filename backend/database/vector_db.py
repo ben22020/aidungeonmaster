@@ -1,3 +1,6 @@
+import pysqlite3
+import sys
+sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
 import chromadb
 import uuid
 from sentence_transformers import SentenceTransformer
@@ -6,22 +9,23 @@ client = chromadb.PersistentClient(path="./chromadb")
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
 npc_memory_collection = client.get_or_create_collection("npc_memory")
-world_memory_collection = client.get_or_create_collection("quests")
+world_memory_collection = client.get_or_create_collection("world_memory")
 
 
 def store_npc_memory(npc_id, user_input, npc_reply):
     vector = model.encode(f"Player: {user_input} | NPC: {npc_reply}").tolist()
     npc_memory_collection.add(ids=[npc_id], embeddings=[vector], metadatas=[{"memory": user_input + " | " + npc_reply}])
 
-def store_world_memory(events: list):
+def store_world_memory(event: str):
     """Store a world event in the vector database"""
-    ids = [str(uuid.uuid4()) for _ in events]
-    vectors = model.encode([events])
+    event_id = str(uuid.uuid4()) 
+    vector = model.encode(event).tolist()
     world_memory_collection.add(
-        ids=ids,
-        embeddings=[vec.tolist() for vec in vectors],  # Convert vectors to lists
-        metadatas=[{"event": event} for event in events]
+        ids=[event_id],
+        embeddings=[vector],
+        metadatas=[{"event": event}]
     )
+    print(f"Stored event {event_id}: {event}")
 
 def retrieve_relevant_world_events(query: str, top_k=3):
     """Retrieve relevant world events from ChromaDB based on query."""

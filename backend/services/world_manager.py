@@ -1,10 +1,13 @@
 import configparser
 from langchain_anthropic import ChatAnthropic
 from backend.database import vector_db
+from dotenv import load_dotenv
+import os
 
 def create_model():
+    load_dotenv()
     model = 'claude-3-5-sonnet-20240620'
-    api_key = ""
+    api_key = os.getenv("ANTHROPIC_API_KEY")
     max_tokens = 1024
     llm = ChatAnthropic(model = model, api_key = api_key, max_tokens = max_tokens)
     return  llm
@@ -24,7 +27,8 @@ def generate_world_history(theme:str, character_name: str, character_description
     world_history = response.content
 
     events = extract_events(world_history)
-    vector_db.store_world_memory(events)
+    for event in events:
+        vector_db.store_world_memory(event)
 
     return world_history
     
